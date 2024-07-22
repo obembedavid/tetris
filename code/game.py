@@ -42,6 +42,9 @@ class Game:
         
         self.surface.blit(self.line_surface, (0,0))
 
+def imput(self):
+    
+
     def run(self):
 
         #update
