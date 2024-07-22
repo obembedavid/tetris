@@ -1,5 +1,6 @@
-import pygame
+from pygame.time import get_ticks
 from settings import * 
+
 
 class Timer:
     def __init__(self, duration, repeated = False, func = None):
@@ -10,26 +11,26 @@ class Timer:
         self.start_time = 0 
         self.active = False 
 
-        def activate(self):
-            self.active = True
-            start_time = pygame.time.get_ticks()
+    def activate(self):
+        self.active = True
+        start_time = pygame.time.get_ticks()
             
-        def deactivate(self):
-            self.active = False 
-            self.start_time = 0 
+    def deactivate(self):
+        self.active = False 
+        self.start_time = 0 
         
-        def update(self):
-            current_time = pygame.time.get_ticks()
-            if current_time - self.start_time >= self.duration and self.active:
-                
-                #call a function 
-                if self.func and self.start_time != 0:
-                    self.func()
+    def update(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.start_time >= self.duration and self.active:
+            
+            #call a function 
+            if self.func and self.start_time != 0:
+                self.func()
 
 
-                #reset timer 
-                self.deactivate()
+            #reset timer 
+            self.deactivate()
 
-                #repeat the timer 
-                if self.repeated:
-                    self.activate()
+            #repeat the timer 
+            if self.repeated:
+                self.activate()

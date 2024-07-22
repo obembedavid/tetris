@@ -1,6 +1,6 @@
 from settings import * 
 from random import *
-from timer import Timer 
+from timer import Timer
 
 class Game:
     def __init__(self):
@@ -16,14 +16,16 @@ class Game:
         self.line_surface.set_colorkey((0,255,0))
         self.line_surface.set_alpha(60)
 
+
         #tetromino
-        self.tetromino = Tetromino(choice(list(Tetromino.keys())), self.sprites())
+        self.tetromino = Tetromino(choice(list(TETROMINOS.keys())), self.sprites)
 
         #timer
         self.timers = {
-            'vertical move': Timer(UPDATE_SPEED, True, self.move_down)
+            'vertical move': Timer(UPDATE_SPEED, True, self.move_down),
+            'horizontal move': Timer(MOVE_WAIT_TIME)
         }
-        self.timers['verical move'].activate()
+        self.timers['vertical move'].activate()
 
     def timer_update(self):
         for timer in self.timers.values():
@@ -42,14 +44,22 @@ class Game:
         
         self.surface.blit(self.line_surface, (0,0))
 
-def imput(self):
-    
+    def imput(self):
+        keys = pygame.key.get_pressed()
+        if not self.timers['horizontal move'].active:
+            if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                self.tetromino.move_horizontal(1)
+                self.timers['horizontal move'].activate()
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                self.tetromino.move_horizontal(-1)
+                self.timers['horizontal move'].activate()
 
     def run(self):
 
         #update
         self.timer_update()
         self.sprites.update()
+        self.sprites.draw(self.surface)
 
         #drawing
         self.surface.fill(GRAY)
@@ -62,24 +72,28 @@ class Tetromino:
         
         #setup
         self.block_positions = TETROMINOS[shape]['shape']
-        self.block.colour = TETROMINOS[shape]['color']
+        self.colour = TETROMINOS[shape]['color']
 
         # create blocks 
         self.blocks = [Block(group, pos ,self.colour) for pos in self.block_positions]
     
+    def move_horizontal(self,amount):
+        for block in self.blocks:
+            block.pos.x += amount 
+
     def move_down(self):
         for block in self.blocks:
             block.pos.y += 1 
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self, group, pos ,colour):
+    def __init__(self, group, pos ,color):
         super().__init__(group)
-        self.image = pygame.surface((CELL_SIZE,CELL_SIZE))
-        self.image.fill(colour)
+        self.image = pygame.Surface((CELL_SIZE,CELL_SIZE))
+        self.image.fill(color)
         
 
         # position
-        self.pos = pygame.Vector2(pos)+ BLOCK_OFFSET
+        self.pos = pygame.Vector2(pos) + BLOCK_OFFSET
         self.rect = self.image.get_rect(topleft = self.pos * CELL_SIZE)
     
     def update(self):
